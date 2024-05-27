@@ -9,4 +9,6 @@ Week 13 - 17: Learning to use Milne-Eddington inversion
 
 Week 20 - 24: Reproducing results from Ivan's paper 
 
-Week 
+Week 27 - 31: Working with the hinode dataset
+
+Week 3 - 7 of June: 
