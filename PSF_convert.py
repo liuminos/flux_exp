@@ -4,6 +4,8 @@ from astropy.io import fits
 import astropy.convolution as apconv
 import sys
 
+#input: filepath; Diameter of the telescope
+#-------------------------------------------
 #load data
 filepath = sys.argv[1]
 
@@ -20,7 +22,7 @@ ll = np.arange(201)*0.01+6301.0
 
 #prepare the PSF
 #D = 0.20 #m
-D = int(sys.argv[2])
+D = float(sys.argv[2])
 llambda = 500e-9
 pix_size = 16e3 #m
 pixel_scale_arcsec = 16e3 / 725e3
@@ -30,13 +32,14 @@ PSF = apconv.AiryDisk2DKernel(diff_limit_pixels, mode='oversample')
 print("info::PSF prepared")
 
 #convolve PSF with data and bin
-convolve = np.zeros([1536,1536,4,201])
-cb = np.zeros([768,768,4,201])
+nx, ny, ns, nw = stokes.shape
+convolve = np.zeros([nx,ny,ns,nw])
+cb = np.zeros([int(nx/2),int(ny/2),ns,nw])
 
 for i in range(4):
     for j in range(201):
         convolve[:,:,i,j] = apconv.convolve_fft(stokes[:,:,i,j],PSF,boundary='wrap',normalize_kernel=True)
-        cb[:,:,i,j] = np.sum(convolve[:,:,i,j].reshape(768,2,768,2),axis=(1,3))/4.0
+        cb[:,:,i,j] = np.sum(convolve[:,:,i,j].reshape(int(nx/2),2,int(ny/2),2),axis=(1,3))/4.0
 
 #save
 hdu1 = fits.PrimaryHDU(cb)
